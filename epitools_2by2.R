@@ -1,27 +1,19 @@
-library(tidyverse)
-library(rvest)
+# get results form epitools ausvet
 
-epitools_web <- read_html("http://epitools.ausvet.com.au/content.php?page=2by2Table&Disease=Disease&Exposure=Exposure&a=34&b=757&c=7&d=2427&Conf=0.95&Digits=3&StudyType=1")
+epitools_2by2 <- function(a, b, c, d, Digits, Conf, StudyType){
+  
+  library(tidyverse)
+  library(rvest)
+  
+  header <- "http://epitools.ausvet.com.au/content.php?page=2by2Table&Disease=Disease&Exposure=Exposure&"
 
-
-epitools_2by2 <- function(a, b, c, d, Digits, StudyType){
-  
-  "http://epitools.ausvet.com.au/content.php?page=2by2Table&Disease=Disease&Exposure=Exposure"
-  "&a="
-  "&b="
-  "&c="
-  "&d="
-  "&Digits="
-  "StudyType="
-  
-  
-  
+  call <- match.call()
+  call <- stringr::str_replace_all(paste(names(call[-1]), "=",
+                                         as.character(call)[-1],
+                                         collapse = "&"), " ", "")
+  epi <- read_html(paste0(header,call)) %>% 
+    html_nodes("table") %>%
+    .[c(3,5,7,9)] %>%
+    map(html_table, fill = TRUE) %>%
+    set_names(c("data", "expected", "rates", "tests"))
 }
-
-epi <- epitools_web %>%
-  html_nodes("table") %>%
-  .[c(3,5,7,9)] %>%  
-  map(html_table, fill = TRUE) %>% 
-  set_names(c("data", "expected", "rates", "tests"))
-
-print(epi)
