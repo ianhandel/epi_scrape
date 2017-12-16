@@ -32,3 +32,4 @@ test_data <-
     epitools_2by2(01, 12, 11, 01, 3, 0.99, 2))
 
 
+save(test_data, file = "epitools_2by2.rda")
